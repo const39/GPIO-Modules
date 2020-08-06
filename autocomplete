@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Autocomplete script for the gpio-modules CLI
+# 
+# Available commands : start, stop, installed, running
+#
+# @author Constantin FLEURY - const39
+
+
+_gpio-modules() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Available commands
+    opts="start stop installed running"
+
+    # Default autocomplete
+    if [[ "${prev}" == "gpio-modules" ]]; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+    fi
+
+    # Autocomplete the 2nd argument
+    case "${prev}" in
+        "start" | "stop")
+            # List all the installed modules without the top user-displayed message (containing the 'installed' word).
+            local running=$(gpio-modules installed | grep -v 'installed')
+
+            # Add the 'all' argument to the list
+            running+=" all"
+
+            COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+}
+complete -F _gpio-modules gpio-modules

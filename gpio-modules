@@ -1,0 +1,168 @@
+#!/bin/bash
+
+# CLI bash script for managing GPIO modules
+#
+# @author Constantin FLEURY - const39
+
+# BASE_DIR=/usr/local/bin
+INSTALL_DIR=$HOME/.gpio/modules
+# INSTALL_DIR=$HOME/Documents/Dev/Config/raspberry/GPIO/modules
+
+SYNTAX1="Syntax: gpio_modules {start|stop} {<module_name>|all}"
+SYNTAX2="Syntax: gpio_modules {installed|running}"
+
+installed_cmd="find $INSTALL_DIR -maxdepth 1 -mindepth 1 -type d -printf %f\n"
+
+# Prints the commands syntax on terminal
+function print_syntax() {
+    echo $SYNTAX1
+    echo $SYNTAX2
+}
+
+# Start the given module
+# The script exits with an error code if the given module does not exist.
+# $1 : The module name
+function start_module() {
+
+    # Check if the module exists
+    does_module_exist $1
+
+    # Stop the script if it is alreay started
+    stop_module $1
+
+    # Start the script
+    sudo bash -c "python3 $INSTALL_DIR/$1/$1.py &"
+
+    echo "GPIO module '$1' running..."
+}
+
+# Stop the given module
+# The script exits with an error code if the given module does not exist.
+# $1 : The module name
+function stop_module() {
+
+    # Check if the module exists
+    does_module_exist $1
+
+    # Stop the script
+    sudo pkill -f $INSTALL_DIR/$1/$1.py
+
+    # FIXME sudo retourne toujours 0 au lieu du exit code de pkill
+
+    if [[ "$?" == 0 ]]; then
+        echo "Stopped GPIO module '$1'."
+    else 
+        echo "Warning: GPIO module '$1' was not running."
+    fi
+}
+
+# Start all installed modules by calling the 'start_module' function on all installed modules.
+function start_all_modules() {
+
+    installed=`$installed_cmd`
+
+    for module in $installed; do
+        start_module $module
+    done
+}
+
+# Stop all running modules by calling the 'stop_module' function on all running modules.
+function stop_all_modules() {
+
+    running=`ps -e -o args | grep -v "grep" | grep -o "$INSTALL_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
+
+    for module in $running; do
+        stop_module $module
+    done
+}
+
+# Print on the terminal the list of currently installed modules.
+# This function looks for the modules in the INSTALL_DIR directory.
+function installed_modules() {
+
+    installed=`$installed_cmd`
+    if [[ -z "$installed" ]]; then
+        echo "No GPIO module is currently installed."
+    else 
+        echo "Currently installed GPIO modules:" 
+        printf "$installed\n"
+    fi
+}
+
+# Print on the terminal the list of currently running modules.
+# This function looks for the modules in the INSTALL_DIR directory.
+function running_modules() {
+
+    running=`ps -e -o args | grep -v "grep" | grep -o "$INSTALL_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
+
+    if [[ -z "$running" ]]; then
+        echo "No GPIO module is currently running."
+    else 
+        echo "Currently running GPIO modules:" 
+        printf "$running\n"
+    fi
+}
+
+# Check if the module exist
+# If it exist, does nothing. Otherwise, the function exits with an error code.
+# $1 : the module name
+function does_module_exist() {
+
+    if [[ -z "$1" ]]; then
+        echo "Error: No module name given."
+        print_syntax
+        exit 1
+    fi 
+
+    if [[ ! -d "$INSTALL_DIR/$1" ]]; then
+        echo "Error: Module '$1' not found."
+        exit 1
+    fi
+}
+
+# Parse the command
+function parse_cmd() {
+
+    if [[ -z "$1" ]]; then
+        echo "Error: No action given."
+        print_syntax
+        exit 1
+    fi 
+
+    case "$1" in 
+        "start")
+            if [[ "$2" == "all" ]]; then 
+                start_all_modules
+            else 
+                start_module $2
+            fi
+        ;;
+
+        "stop")
+            if [[ "$2" == "all" ]]; then 
+                stop_all_modules
+            else 
+                stop_module $2
+            fi
+        ;;
+
+        "installed")
+            installed_modules
+        ;;
+        
+        "running")
+            running_modules
+        ;;
+
+        *)
+            echo "Error: Action '$1' unknown."
+            print_syntax
+            exit 1
+        ;;
+    esac
+}
+
+action=$1   # Arg1 = action (e.g. 'start')
+module=$2   # Arg2 = module_name (e.g. 'on_off_button')
+
+parse_cmd $action $module
