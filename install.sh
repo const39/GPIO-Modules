@@ -25,7 +25,7 @@ else
 fi
 
 # Copy CLI script
-cp ./$CLI $CLI_INSTALL_DIR
+cp -r ./$CLI $CLI_INSTALL_DIR
 
 if [[ "$?" == 0 ]]; then
     echo "CLI script successfully installed."
