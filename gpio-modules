@@ -2,11 +2,9 @@
 
 # CLI bash script for managing GPIO modules
 #
-# @author Constantin FLEURY - const39
+# @author Constantin FLEURY (const39)
 
-# BASE_DIR=/usr/local/bin
 INSTALL_DIR=$HOME/.gpio/modules
-# INSTALL_DIR=$HOME/Documents/Dev/Config/raspberry/GPIO/modules
 
 SYNTAX1="Syntax: gpio_modules {start|stop} {<module_name>|all}"
 SYNTAX2="Syntax: gpio_modules {installed|running}"

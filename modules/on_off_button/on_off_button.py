@@ -1,7 +1,7 @@
 """
-Script python qui écoute la broche GPIO 5.
-Si un input est détecté, éteint/allume le Raspberry.
-
+Python script listening to the GPIO pin n°5.
+If an input is detected (via a button push), shutdown or wake up the Raspberry Pi.
+@author Constantin Fleury (const39)
 """
 
 from gpiozero import Button

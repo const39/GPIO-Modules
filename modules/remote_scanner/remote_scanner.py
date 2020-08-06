@@ -1,7 +1,7 @@
 """
-Script python qui écoute la broche GPIO #######.
-Si un input est détecté, lance un scan et sauve le fichier dans l'endroit prévu.
-
+Python script listening to the GPIO pin n° #######.
+If an input is detected (via a button push), request a scan to the defaut scanner and save the file in a directory.
+@author Constantin Fleury (const39)
 """
 
 from gpiozero import Button
@@ -12,12 +12,12 @@ from datetime import datetime
 DEST_DIR = "/home/pi/scan"
 DEST_FORMAT = "tiff"
 
-# On initialise une connexion sur la broche ########### A CHANGER
+# Initialise a connection on the pin n° ########### TODO
 button = Button(5)
 button.when_pressed = scan
 
 
-# TODO ajouter sécurité pour pas avoir plusieurs scans en même temps
+# TODO add safety net to prevent the start of multiple scan at once
 
 
 def generateFilename():
@@ -28,10 +28,10 @@ def generateFilename():
 
 
 def scan():
-    # Création du nom du fichier à partir de la date et l'heure courante
+    # Create the file name with the current datetime
     filename = generateFilename()
 
-    # Lancement du scan
+    # Request a scan
     subprocess.call(
         ["scanimage", "--format=" + DEST_FORMAT, ">", DEST_DIR + "/" + filename],
         shell=False,
