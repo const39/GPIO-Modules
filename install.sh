@@ -25,7 +25,7 @@ else
 fi
 
 # Copy CLI script
-cp -r ./$CLI $CLI_INSTALL_DIR
+cp -r ./$CLI $CLI_INSTALL_DIR/$CLI
 
 if [[ "$?" == 0 ]]; then
     echo "CLI script successfully installed."
@@ -38,8 +38,7 @@ chmod 755 $CLI_INSTALL_DIR/$CLI
 
 
 # Copy and rename the autocomplete file
-sudo cp ./$AUTOCOMPLETE_ORIGINAL_NAME $AUTOCOMPLETE_INSTALL_DIR
-sudo mv $AUTOCOMPLETE_INSTALL_DIR/$AUTOCOMPLETE_ORIGINAL_NAME $AUTOCOMPLETE_INSTALL_DIR/$AUTOCOMPLETE_FINAL_NAME
+sudo cp ./$AUTOCOMPLETE_ORIGINAL_NAME $AUTOCOMPLETE_INSTALL_DIR/$AUTOCOMPLETE_FINAL_NAME
 
 if [[ "$?" == 0 ]]; then
     echo "Autocomplete script successfully installed."
