@@ -2,7 +2,7 @@
 
 # CLI bash script for managing GPIO modules
 #
-# @author Constantin FLEURY (const39)
+# @author const39
 
 INSTALL_DIR=$HOME/.gpio/modules
 

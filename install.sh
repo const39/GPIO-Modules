@@ -2,7 +2,7 @@
 
 # Bash script for installing (locally) GPIO modules and CLI script
 #
-# @author Constantin FLEURY (const39)
+# @author const39
 
 CLI=gpio-modules
 CLI_INSTALL_DIR=$HOME/.local/bin

@@ -1,7 +1,7 @@
 """
 Python script listening to the GPIO pin n° #######.
 If an input is detected (via a button push), request a scan to the defaut scanner and save the file in a directory.
-@author Constantin Fleury (const39)
+@author const39
 """
 
 from gpiozero import Button
