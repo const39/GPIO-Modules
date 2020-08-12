@@ -22,7 +22,7 @@ def generateFilename():
     """
     Generate a filename containing the current datetime.
     """
-    return "scan_" + datetime.now().strftime("%d/%m/%Y_%H:%M:%S") + "." + DEST_FORMAT
+    return "scan_" + datetime.now().strftime("%d-%m-%Y_%H:%M:%S") + "." + DEST_FORMAT
 
 def createDir():
     """
@@ -49,10 +49,9 @@ def scan():
         led.blink(0.8, 0.8)
 
         # Request a scan
-        subprocess.call(
-            ["scanimage", "--format=" + DEST_FORMAT, ">", DEST_DIR + "/" + filename],
-            shell=False,
-        )
+        request = ["scanimage", "--format=" + DEST_FORMAT]
+        with open(DEST_DIR + '/' + filename, 'w') as outfile:
+                subprocess.run(request, shell=False, stdout=outfile)
 
         # Switch the LED off once the process has ended
         led.off()
