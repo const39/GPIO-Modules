@@ -8,6 +8,7 @@ CLI=gpio-modules
 CLI_INSTALL_DIR=$HOME/.local/bin
 
 MODULES_DIR=./modules
+TEMPLATES_DIR=./templates
 MODULES_INSTALL_DIR=$HOME/.gpio
 
 AUTOSTART_SCRIPT=autostart
@@ -18,9 +19,10 @@ AUTOCOMPLETE_ORIGINAL_NAME=autocomplete
 AUTOCOMPLETE_FINAL_NAME=gpio-modules
 AUTOCOMPLETE_INSTALL_DIR=/usr/share/bash-completion/completions
 
-# Copy modules in the destination directory
+# Copy modules and templates in the destination directory
 mkdir -p $MODULES_INSTALL_DIR
 cp -r $MODULES_DIR $MODULES_INSTALL_DIR 
+cp -r $TEMPLATES_DIR $MODULES_INSTALL_DIR 
 
 if [[ "$?" == 0 ]]; then
     echo "Modules successfully installed."

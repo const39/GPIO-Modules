@@ -4,11 +4,11 @@
 
 -   Start and stop Python modules
 -   List currently installed or running modules
+-   Automatically start modules on boot
+-   Create new modules from a template
 
 TODO :
 
--   Automatically start modules on boot
--   Create a module template
 -   Remove a module
 
 ## Using GPIO-Modules
@@ -29,10 +29,18 @@ You can use `all` instead of the module name to start/stop all installed modules
 gpio-modules {installed|running}
 ```
 
+### Create a new module
+
+```
+gpio-modules create <module_name>
+```
+
+**Note:** The module name cannot contain spaces. Use underscores (\_) instead.
+
 ## Install
 
 **All Python modules use the Python `gpiozero` library.**
-While it is generally installed by default on Raspbian, you may not have it on your Raspberry. Be sure to check if it's installed before using the modules.\*\*
+While it is generally installed by default on Raspbian, you may not have it on your Raspberry. Be sure to check if it's installed before using the modules.
 
 To install GPIO-Modules :
 

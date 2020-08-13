@@ -6,6 +6,7 @@
 
 BASE_DIR=$HOME/.gpio
 MODULES_DIR=$BASE_DIR/modules
+TEMPLATES_DIR=$BASE_DIR/templates
 TO_START_FILE=$BASE_DIR/to_start.conf
 
 installed_cmd="find $MODULES_DIR -maxdepth 1 -mindepth 1 -type d -printf %f\n"
@@ -14,6 +15,7 @@ installed_cmd="find $MODULES_DIR -maxdepth 1 -mindepth 1 -type d -printf %f\n"
 function print_syntax() {
     echo "Syntax: gpio_modules {installed|running}"
     echo "Syntax: gpio_modules {start|stop} {<module_name>|all}"
+    echo "Syntax: gpio_modules create <module_name>"
 }
 
 # Add the given module name to the TO_START_FILE to enable its autostart 
@@ -82,7 +84,7 @@ function stop_module() {
     # Stop the script
     sudo pkill -f $MODULES_DIR/$1/$1.py
 
-    # FIXME sudo retourne toujours 0 au lieu du exit code de pkill
+    # FIXME sudo always return '0' code instead of pkill exit code
 
     if [[ "$?" == 0 ]]; then
         echo "Stopped GPIO module '$1'."
@@ -138,6 +140,37 @@ function running_modules() {
     fi
 }
 
+# Create a new module
+# If no module name is given or if a module with the given name already exist, the function exits with an error code.
+# $1 : the module name
+function create_module() {
+
+    # Check if a module name is given
+    if [[ -z "$1" ]]; then
+        echo "Error: No module name given."
+        print_syntax
+        exit 1
+    fi 
+
+    # Check if a module already exist with the given name
+    if [[ -d "$MODULES_DIR/$1" ]]; then
+        echo "Error: Module '$1' already exists."
+        exit 1
+    fi    
+
+    # Create new module directory and copy module template file 
+    mkdir $MODULES_DIR/$1
+    cp $TEMPLATES_DIR/module_template.py $MODULES_DIR/$1/$1.py
+
+    if [[ "$?" == 0 ]]; then
+        echo "Created GPIO module '$1'."
+        echo "You can edit the script in $MODULES_DIR/$1."
+    else 
+        echo "Error: GPIO module '$1' could not be created."
+        exit 1
+    fi
+}
+
 # Check if the module exist
 # If it exist, does nothing. Otherwise, the function exits with an error code.
 # $1 : the module name
@@ -179,6 +212,10 @@ function parse_cmd() {
             else 
                 stop_module $2
             fi
+        ;;
+
+        "create")
+            create_module $2
         ;;
 
         "installed")
