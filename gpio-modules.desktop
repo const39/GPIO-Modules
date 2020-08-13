@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=GPIO-Modules
+Exec=/home/pi/.gpio/autostart
+Terminal=false

@@ -4,17 +4,48 @@
 #
 # @author const39
 
-INSTALL_DIR=$HOME/.gpio/modules
+BASE_DIR=$HOME/.gpio
+MODULES_DIR=$BASE_DIR/modules
+TO_START_FILE=$BASE_DIR/to_start.conf
 
-SYNTAX1="Syntax: gpio_modules {start|stop} {<module_name>|all}"
-SYNTAX2="Syntax: gpio_modules {installed|running}"
-
-installed_cmd="find $INSTALL_DIR -maxdepth 1 -mindepth 1 -type d -printf %f\n"
+installed_cmd="find $MODULES_DIR -maxdepth 1 -mindepth 1 -type d -printf %f\n"
 
 # Prints the commands syntax on terminal
 function print_syntax() {
-    echo $SYNTAX1
-    echo $SYNTAX2
+    echo "Syntax: gpio_modules {installed|running}"
+    echo "Syntax: gpio_modules {start|stop} {<module_name>|all}"
+}
+
+# Add the given module name to the TO_START_FILE to enable its autostart 
+# $1 : The module name
+function add_to_start() {
+
+    # Check if the module exists
+    does_module_exist $1
+
+    # Create the file if it does not exist
+    touch $TO_START_FILE
+
+    # Check if the module is already registered in the file. If not save it
+    module=$(cat $TO_START_FILE | grep $1)
+
+    if [[ -z "$module" ]]; then
+        echo $1 >> $TO_START_FILE
+    fi
+}
+
+# Remove the given module name from the TO_START_FILE to disable its autostart 
+# $1 : The module name
+function remove_to_start() {
+
+    # Check if the module exists
+    does_module_exist $1
+
+    # Create the file if it does not exist
+    touch $TO_START_FILE
+
+    # Remove all occurrences of the module name from the file.
+    sed -i "/$1/d" $TO_START_FILE
 }
 
 # Start the given module
@@ -29,7 +60,10 @@ function start_module() {
     stop_module $1
 
     # Start the script
-    sudo bash -c "python3 $INSTALL_DIR/$1/$1.py &"
+    sudo bash -c "python3 $MODULES_DIR/$1/$1.py &"
+
+    # Enable autostart of this module
+    add_to_start $1
 
     echo "GPIO module '$1' running..."
 }
@@ -42,8 +76,11 @@ function stop_module() {
     # Check if the module exists
     does_module_exist $1
 
+    # Disable autostart of this module
+    remove_to_start $1
+
     # Stop the script
-    sudo pkill -f $INSTALL_DIR/$1/$1.py
+    sudo pkill -f $MODULES_DIR/$1/$1.py
 
     # FIXME sudo retourne toujours 0 au lieu du exit code de pkill
 
@@ -67,7 +104,7 @@ function start_all_modules() {
 # Stop all running modules by calling the 'stop_module' function on all running modules.
 function stop_all_modules() {
 
-    running=`ps -e -o args | grep -v "grep" | grep -o "$INSTALL_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
+    running=`ps -e -o args | grep -v "grep" | grep -o "$MODULES_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
 
     for module in $running; do
         stop_module $module
@@ -75,7 +112,7 @@ function stop_all_modules() {
 }
 
 # Print on the terminal the list of currently installed modules.
-# This function looks for the modules in the INSTALL_DIR directory.
+# This function looks for the modules in the MODULES_DIR directory.
 function installed_modules() {
 
     installed=`$installed_cmd`
@@ -88,10 +125,10 @@ function installed_modules() {
 }
 
 # Print on the terminal the list of currently running modules.
-# This function looks for the modules in the INSTALL_DIR directory.
+# This function looks for the modules in the MODULES_DIR directory.
 function running_modules() {
 
-    running=`ps -e -o args | grep -v "grep" | grep -o "$INSTALL_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
+    running=`ps -e -o args | grep -v "grep" | grep -o "$MODULES_DIR/.*\.py" | grep -o "[^/]*$" | cut -d. -f 1`
 
     if [[ -z "$running" ]]; then
         echo "No GPIO module is currently running."
@@ -112,7 +149,7 @@ function does_module_exist() {
         exit 1
     fi 
 
-    if [[ ! -d "$INSTALL_DIR/$1" ]]; then
+    if [[ ! -d "$MODULES_DIR/$1" ]]; then
         echo "Error: Module '$1' not found."
         exit 1
     fi

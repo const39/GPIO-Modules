@@ -10,6 +10,10 @@ CLI_INSTALL_DIR=$HOME/.local/bin
 MODULES_DIR=./modules
 MODULES_INSTALL_DIR=$HOME/.gpio
 
+AUTOSTART_SCRIPT=autostart
+AUTOSTART_DESKTOP=gpio-modules.desktop
+AUTOSTART_DESKTOP_INSTALL_DIR=$HOME/.config/autostart
+
 AUTOCOMPLETE_ORIGINAL_NAME=autocomplete
 AUTOCOMPLETE_FINAL_NAME=gpio-modules
 AUTOCOMPLETE_INSTALL_DIR=/usr/share/bash-completion/completions
@@ -23,6 +27,22 @@ if [[ "$?" == 0 ]]; then
 else 
     echo "Error: Modules cannot be installed."
 fi
+
+# Copy autostart script in the destination directory
+cp $AUTOSTART_SCRIPT $MODULES_INSTALL_DIR 
+
+# Set execute permissions on the autostart script
+chmod +x $MODULES_INSTALL_DIR/$AUTOSTART_SCRIPT
+
+mkdir -p $AUTOSTART_DESKTOP_INSTALL_DIR
+cp $AUTOSTART_DESKTOP $AUTOSTART_DESKTOP_INSTALL_DIR 
+
+if [[ "$?" == 0 ]]; then
+    echo "Autostart successfully installed."
+else 
+    echo "Error: Autostart cannot be installed."
+fi
+
 
 # Copy CLI script
 mkdir -p $CLI_INSTALL_DIR
