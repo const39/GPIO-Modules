@@ -1,0 +1,7 @@
+#!/bin/bash
+
+to_start=$(cat $HOME/.gpio/to_start.conf)
+
+for module in $to_start; do
+    gpio-modules start $module
+done

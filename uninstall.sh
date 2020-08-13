@@ -9,6 +9,8 @@ CLI_INSTALL_DIR=$HOME/.local/bin
 
 MODULES_INSTALL_DIR=$HOME/.gpio
 
+AUTOSTART_DESKTOP=$HOME/.config/autostart/gpio-modules.desktop
+
 AUTOCOMPLETE_FINAL_NAME=gpio-modules
 AUTOCOMPLETE_INSTALL_DIR=/usr/share/bash-completion/completions
 
@@ -19,6 +21,15 @@ if [[ "$?" == 0 ]]; then
     echo "Modules successfully removed."
 else 
     echo "Error: Modules cannot be removed."
+fi
+
+# Removing autoscript desktop file from the destination directory
+rm $AUTOSTART_DESKTOP 
+
+if [[ "$?" == 0 ]]; then
+    echo "Autostart successfully removed."
+else 
+    echo "Error: Autostart cannot be removed."
 fi
 
 # Removing CLI script
