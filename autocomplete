@@ -2,7 +2,7 @@
 
 # Autocomplete script for the gpio-modules CLI
 # 
-# Available commands : start, stop, installed, running
+# Available commands : start, stop, installed, running, create
 #
 # @author const39
 
@@ -15,7 +15,7 @@ _gpio-modules()
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     # Available commands
-    opts="start stop installed running"
+    opts="start stop installed running create"
 
     # Default autocomplete
     if [[ "${prev}" == "gpio-modules" ]]; then
