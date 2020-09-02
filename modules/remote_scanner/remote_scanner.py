@@ -11,7 +11,7 @@ import subprocess
 import os
 
 
-HOME_DIR = os.getenv("HOME") 
+HOME_DIR = "/home/pi" 
 SCAN_DIR = "scan"
 DEST_DIR = HOME_DIR + '/' + SCAN_DIR
 DEST_FORMAT = "png"
